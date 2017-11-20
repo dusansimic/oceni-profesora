@@ -1,0 +1,35 @@
+{
+  "name": "oceni-profesora",
+  "version": "0.0.1",
+  "description": "Backend za projekat oceni profesora.",
+  "main": "app.js",
+  "repository": "git@github.com:dusansimic/oceni-profesora.git",
+  "author": "Dušan Simić <dusan.simic1810@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "moment": "^2.19.2",
+    "mongodb": "^2.2.33"
+  },
+  "devDependencies": {
+    "morgan": "^1.9.0",
+    "nodemon": "^1.12.1",
+    "xo": "^0.18.2"
+  },
+  "scripts": {
+    "dev": "nodemon",
+    "test": "xo"
+  },
+  "xo": {
+    "overrides": [
+      {
+        "files": "api.js",
+        "rules": {
+          "new-cap": "off"
+        }
+      }
+    ]
+  }
+}
