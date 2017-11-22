@@ -38,7 +38,10 @@ api.post('/queryProfesori', (req, res) => {
 
 	MongoClient.connect(ServerUrl, (err, db) => {
 		if (err) {
-			return res.status(500).send(err);
+			return res.status(err.code).send({
+				code: err.code,
+				message: err.message
+			});
 		}
 
 		const collectionProfesori = db.collection('profesori');
@@ -47,7 +50,10 @@ api.post('/queryProfesori', (req, res) => {
 			db.close();
 
 			if (err) {
-				return res.status(500).send(err);
+				return res.status(err.code).send({
+					code: err.code,
+					message: err.message
+				});
 			}
 
 			return res.send(docs);
