@@ -16,7 +16,10 @@ api.get('/motd', (req, res) => {
 api.get('/getProfesori', (req, res) => {
 	MongoClient.connect(ServerUrl, (err, db) => {
 		if (err) {
-			return res.status(500).send(err);
+			return res.status(err.code || 500).send({
+				code: err.code || 500,
+				message: err.message
+			});
 		}
 
 		const collectionProfesori = db.collection('profesori');
@@ -25,7 +28,10 @@ api.get('/getProfesori', (req, res) => {
 			db.close();
 
 			if (err) {
-				return res.status(500).send(err);
+				return res.status(err.code || 500).send({
+					code: err.code || 500,
+					message: err.message
+				});
 			}
 
 			return res.send(docs);
@@ -38,8 +44,8 @@ api.post('/queryProfesori', (req, res) => {
 
 	MongoClient.connect(ServerUrl, (err, db) => {
 		if (err) {
-			return res.status(err.code).send({
-				code: err.code,
+			return res.status(err.code || 500).send({
+				code: err.code || 500,
 				message: err.message
 			});
 		}
@@ -50,8 +56,8 @@ api.post('/queryProfesori', (req, res) => {
 			db.close();
 
 			if (err) {
-				return res.status(err.code).send({
-					code: err.code,
+				return res.status(err.code || 500).send({
+					code: err.code || 500,
 					message: err.message
 				});
 			}
@@ -66,7 +72,10 @@ api.post('/getKomentari/fromProfesor', (req, res) => {
 
 	MongoClient.connect(ServerUrl, (err, db) => {
 		if (err) {
-			return res.status(500).send(err);
+			return res.status(err.code || 500).send({
+				code: err.code || 500,
+				message: err.message
+			});
 		}
 
 		const collectionProfesori = db.collection('profesori');
@@ -74,11 +83,16 @@ api.post('/getKomentari/fromProfesor', (req, res) => {
 		collectionProfesori.find(profData, {komentari: 1}).toArray((err, docs) => {
 			db.close();
 
+			console.log(docs);
+
 			if (err) {
-				return res.status(500).send(err);
+				return res.status(err.code || 500).send({
+					code: err.code || 500,
+					message: err.message
+				});
 			}
 
-			return res.send(docs);
+			return res.send(JSON.stringify(docs));
 		});
 	});
 });
@@ -89,7 +103,10 @@ api.post('/queryKomentari/fromProfesor/byOcena', (req, res) => {
 
 	MongoClient.connect(ServerUrl, (err, db) => {
 		if (err) {
-			return res.status(500).send(err);
+			return res.status(err.code || 500).send({
+				code: err.code || 500,
+				message: err.message
+			});
 		}
 
 		const collectionProfesori = db.collection('profesori');
@@ -98,7 +115,10 @@ api.post('/queryKomentari/fromProfesor/byOcena', (req, res) => {
 			db.close();
 
 			if (err) {
-				return res.status(500).send(err);
+				return res.status(err.code || 500).send({
+					code: err.code || 500,
+					message: err.message
+				});
 			}
 
 			const listaKomentara = [];
@@ -109,6 +129,70 @@ api.post('/queryKomentari/fromProfesor/byOcena', (req, res) => {
 			}
 
 			return res.send(listaKomentara);
+		});
+	});
+});
+
+api.post('/addProfesor', (req, res) => {
+	const profData = req.body;
+
+	MongoClient.connect(ServerUrl, (err, db) => {
+		if (err) {
+			return res.status(err.code || 500).send({
+				code: err.code || 500,
+				message: err.message
+			});
+		}
+
+		const collectionProfesori = db.collection('profesori');
+
+		collectionProfesori.insertOne(profData, (err, response) => {
+			db.close();
+
+			if (err) {
+				return res.status(err.code || 500).send({
+					code: err.code || 500,
+					message: err.message
+				});
+			}
+
+			return res.send({
+				insertedCount: response.insertedCount
+			});
+		});
+	});
+});
+
+api.post('/addKomentar', (req, res) => {
+	const profData = req.body.prof;
+	const komentarData = req.body.komentar;
+	console.log(komentarData);
+
+	MongoClient.connect(ServerUrl, (err, db) => {
+		if (err) {
+			return res.status(err.code || 500).send({
+				code: err.code || 500,
+				message: err.message
+			});
+		}
+
+		const collectionProfesori = db.collection('profesori');
+
+		collectionProfesori.update(profData, {'$push':{'komentari':{
+			'user': komentarData.user,
+			'text': komentarData.text,
+			'ocena': komentarData.ocena
+		}}}, (err, response) => {
+			db.close();
+
+			if (err) {
+				return res.status(err.code || 500).send({
+					code: err.code || 500,
+					message: err.message
+				});
+			}
+
+			return res.send(response.upsertedCount);
 		});
 	});
 });
