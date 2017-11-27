@@ -32,6 +32,10 @@ const Profesor = new Schema({
 			required: true,
 			min: 1,
 			max: 5
+		},
+		vreme: {
+			type: Date,
+			required: true
 		}
 	}],
 	skole: [{
