@@ -15,25 +15,17 @@ api.get('/motd', (req, res) => {
 	return res.send({motd: 'Hello world!'});
 });
 
-api.get('/getProfesori', (req, res) => {
-	mongoose.connect(ServerUrl, {
-		useMongoClient: true
-	});
-
-	Profesor.find({}, (err, docs) => {
-		if (err) {
-			return res.status(err.code || 500).send({
-				code: err.code || 500,
-				message: err.message
-			});
-		}
-
-		return res.send(docs);
-	});
-});
-
-api.post('/queryProfesori', (req, res) => {
-	const profData = req.body;
+api.get('/queryProfesori', (req, res, next) => {
+	let profData = {};
+	if (req.query.jmbg) {
+		profData.jmbg = req.query.jmbg;
+	}
+	if (req.query.ime) {
+		profData.ime = req.query.ime;
+	}
+	if (req.query.prezime) {
+		profData.prezime = req.query.prezime;
+	}
 
 	mongoose.connect(ServerUrl, {
 		useMongoClient: true
@@ -41,18 +33,15 @@ api.post('/queryProfesori', (req, res) => {
 
 	Profesor.find(profData, (err, docs) => {
 		if (err) {
-			return res.status(err.code || 500).send({
-				code: err.code || 500,
-				message: err.message
-			});
+			return next(err);
 		}
 
 		return res.send(docs);
 	});
 });
 
-api.post('/getKomentari/fromProfesor', (req, res) => {
-	const profData = req.body;
+api.get('/getKomentari/fromProfesor/:id', (req, res, next) => {
+	const profData = {jmbg: req.params.id};
 
 	mongoose.connect(ServerUrl, {
 		useMongoClient: true
@@ -60,17 +49,14 @@ api.post('/getKomentari/fromProfesor', (req, res) => {
 
 	Profesor.find(profData, 'komentari', (err, docs) => {
 		if (err) {
-			return res.status(err.code || 500).send({
-				code: err.code || 500,
-				message: err.message
-			});
+			return next(err);
 		}
 
 		return res.send(docs);
 	});
 });
 
-api.post('/addProfesor', (req, res) => {
+api.post('/addProfesor', (req, res, next) => {
 	const profData = req.body;
 
 	mongoose.connect(ServerUrl, {
@@ -79,19 +65,16 @@ api.post('/addProfesor', (req, res) => {
 
 	Profesor.create(profData, (err, docs) => {
 		if (err) {
-			return res.status(err.code || 500).send({
-				code: err.code || 500,
-				message: err.message
-			});
+			return next(err);
 		}
 
 		return res.send(docs);
 	});
 });
 
-api.post('/addKomentar', (req, res) => {
-	const profData = req.body.prof;
-	const komentarData = req.body.komentar;
+api.put('/addKomentar/:id', (req, res, next) => {
+	const profData = {jmbg: req.body.id};
+	const komentarData = req.body;
 
 	mongoose.connect(ServerUrl, {
 		useMongoClient: true
@@ -99,13 +82,24 @@ api.post('/addKomentar', (req, res) => {
 
 	Profesor.update(profData, {$push: {komentari: komentarData}}, (err, docs) => {
 		if (err) {
-			return res.status(err.code || 500).send({
-				code: err.code || 500,
-				message: err.message
-			});
+			return next(err);
 		}
 
 		return res.send(docs);
+	});
+});
+
+api.put('/likeKomentar/:idProfesora/:idKomentara', (req, res) => {
+	if (err) {
+		return res.status()
+	}
+});
+
+api.use((err, req, res, next) => {
+	return res.status(err.status || 500).json({
+		message: err.message,
+		error: err.error,
+		status: err.status
 	});
 });
 
