@@ -16,7 +16,7 @@ api.get('/motd', (req, res) => {
 });
 
 api.get('/queryProfesori', (req, res, next) => {
-	let profData = {};
+	const profData = {};
 	if (req.query.jmbg) {
 		profData.jmbg = req.query.jmbg;
 	}
@@ -89,13 +89,43 @@ api.put('/addKomentar/:id', (req, res, next) => {
 	});
 });
 
-api.put('/likeKomentar/:idProfesora/:idKomentara', (req, res) => {
-	if (err) {
-		return res.status()
-	}
+api.post('/likeKomentar/:idProfesora/:idKomentara', (req, res, next) => {
+	const idProfesora = req.params.idProfesora;
+	const idKomentara = req.params.idKomentara;
+	const profData = {jmbg: idProfesora, komentari: {$elemMatch: {_id: idKomentara}}};
+
+	mongoose.connect(ServerUrl, {
+		useMongoClient: true
+	});
+
+	Profesor.update(profData, {$inc: {'komentari.$.likes': +1}}, (err, docs) => {
+		if (err) {
+			return next(err);
+		}
+
+		return res.send(docs);
+	});
 });
 
-api.use((err, req, res, next) => {
+api.post('/dislikeKomentar/:idProfesora/:idKomentara', (req, res, next) => {
+	const idProfesora = req.params.idProfesora;
+	const idKomentara = req.params.idKomentara;
+	const profData = {jmbg: idProfesora, komentari: {$elemMatch: {_id: idKomentara}}};
+
+	mongoose.connect(ServerUrl, {
+		useMongoClient: true
+	});
+
+	Profesor.update(profData, {$inc: {'komentari.$.dislikes': +1}}, (err, docs) => {
+		if (err) {
+			return next(err);
+		}
+
+		return res.send(docs);
+	});
+});
+
+api.use((err, req, res) => {
 	return res.status(err.status || 500).json({
 		message: err.message,
 		error: err.error,

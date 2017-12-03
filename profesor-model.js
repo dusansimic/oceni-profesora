@@ -36,6 +36,16 @@ const Profesor = new Schema({
 		vreme: {
 			type: Date,
 			required: true
+		},
+		likes: {
+			type: Number,
+			required: true,
+			min: 0
+		},
+		dislikes: {
+			type: Number,
+			required: true,
+			min: 0
 		}
 	}],
 	skole: [{
@@ -47,4 +57,4 @@ const Profesor = new Schema({
 	}]
 });
 
-module.exports = Profesor;
+module.exports = mongoose.model(('Profesor', Profesor));
