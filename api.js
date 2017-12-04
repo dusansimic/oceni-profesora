@@ -5,14 +5,10 @@ const api = express.Router();
 
 const ServerUrl = process.env.SERVER_URL || 'mongodb://localhost:27017/oceniprof';
 
-const Profesor = mongoose.model('Profesor', require('./profesor-model'));
+const Profesor = require('./profesor-model');
 
 api.get('/', (req, res) => {
 	return res.send('Api is up and running!');
-});
-
-api.get('/motd', (req, res) => {
-	return res.send({motd: 'Hello world!'});
 });
 
 api.get('/queryProfesori', (req, res, next) => {
@@ -89,7 +85,7 @@ api.put('/addKomentar/:id', (req, res, next) => {
 	});
 });
 
-api.post('/likeKomentar/:idProfesora/:idKomentara', (req, res, next) => {
+api.put('/likeKomentar/:idProfesora/:idKomentara', (req, res, next) => {
 	const idProfesora = req.params.idProfesora;
 	const idKomentara = req.params.idKomentara;
 	const profData = {jmbg: idProfesora, komentari: {$elemMatch: {_id: idKomentara}}};
@@ -107,7 +103,7 @@ api.post('/likeKomentar/:idProfesora/:idKomentara', (req, res, next) => {
 	});
 });
 
-api.post('/dislikeKomentar/:idProfesora/:idKomentara', (req, res, next) => {
+api.put('/dislikeKomentar/:idProfesora/:idKomentara', (req, res, next) => {
 	const idProfesora = req.params.idProfesora;
 	const idKomentara = req.params.idKomentara;
 	const profData = {jmbg: idProfesora, komentari: {$elemMatch: {_id: idKomentara}}};

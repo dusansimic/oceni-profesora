@@ -57,4 +57,4 @@ const Profesor = new Schema({
 	}]
 });
 
-module.exports = mongoose.model(('Profesor', Profesor));
+module.exports = mongoose.model('Profesor', Profesor);
