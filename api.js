@@ -97,7 +97,7 @@ api.put('/addOcena/:id', (req, res, next) => {
 			}
 			srednjaOcena /= ocene.length;
 
-			Profesor.update(profData, {$set: {srednjaOcena: srednjaOcena.toFixed(2)}}, (err, docs) => {
+			Profesor.update(profData, {$set: {srednjaOcena: srednjaOcena.toFixed(2)}}, err => {
 				if (err) {
 					return next(err);
 				}
@@ -161,7 +161,35 @@ api.put('/dislikeKomentar/:idProfesora/:idKomentara', (req, res, next) => {
 	});
 });
 
-api.use((err, req, res) => {
+api.delete('/removeProfesor/:id', (req, res, next) => {
+	const profData = {jmbg: req.params.id};
+
+	mongoose.connect(ServerUrl, {
+		useMongoClient: true
+	});
+
+	Profesor.remove(profData, (err, res) => {
+		if (err) {
+			return next(err);
+		}
+	});
+});
+
+api.delete('/removeKomentar/:idProfesora/:idKomentara', (req, res, next) => {
+	const idProfesora = req.params.idProfesora;
+	const idKomentara = req.params.idKomentara;
+	const profData = {jmbg: idProfesora, komentari: {$elemMatch: {_id: idKomentara}}};
+
+	Profesor.update(profData, {$pull: {komentari: {_id: idKomentara}}}, (err, docs) => {
+		if (err) {
+			return next(err);
+		}
+
+		return res.send(docs);
+	});
+});
+
+api.use((err, req, res, next) => {
 	return res.status(err.status || 500).json({
 		message: err.message,
 		error: err.error,
