@@ -1,5 +1,3 @@
-import { Collection } from 'mongoose';
-
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
@@ -21,9 +19,11 @@ const Profesor = new Schema({
 	},
 	srednjaOcena: {
 		type: Number,
-		required: true,
 		min: 1.0,
 		max: 5.0
+	},
+	ocene: {
+		type: [Number]
 	},
 	komentari: [{
 		user: {
@@ -34,12 +34,6 @@ const Profesor = new Schema({
 			type: String,
 			required: true,
 			maxlength: 512
-		},
-		ocena: {
-			type: Number,
-			required: true,
-			min: 1,
-			max: 5
 		},
 		vreme: {
 			type: Date,
@@ -61,22 +55,11 @@ const Profesor = new Schema({
 			type: String,
 			required: true
 		},
-		predmeti: [String]
+		predmeti: {
+			type: [String],
+			required: true
+		}
 	}]
 }, {collection: 'teacher'});
-
-Profesor.pre('save', next => {
-	let srednjaOcena = 0;
-
-	for (let i = 0; i < this.komentari.length; i++) {
-		srednjaOcena += this.komentari[i].ocena;
-	}
-
-	srednjaOcena /= this.komentari.length;
-
-	this.srednjaOcena = srednjaOcena;
-
-	next();
-});
 
 module.exports = mongoose.model('Profesor', Profesor);
