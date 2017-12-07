@@ -168,7 +168,7 @@ api.delete('/removeProfesor/:id', (req, res, next) => {
 		useMongoClient: true
 	});
 
-	Profesor.remove(profData, (err, res) => {
+	Profesor.remove(profData, err => {
 		if (err) {
 			return next(err);
 		}
@@ -190,11 +190,12 @@ api.delete('/removeKomentar/:idProfesora/:idKomentara', (req, res, next) => {
 });
 
 api.use((err, req, res, next) => {
-	return res.status(err.status || 500).json({
+	res.status(err.status || 500).json({
 		message: err.message,
 		error: err.error,
 		status: err.status
 	});
+	next();
 });
 
 module.exports = api;
