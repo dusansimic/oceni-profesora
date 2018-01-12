@@ -1,9 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const config = require('./config');
 
 const komentarRouter = express.Router(); // eslint-disable-line new-cap
 
-const ServerUrl = process.env.SERVER_URL || 'mongodb://localhost:27017/oceniprof';
+const ServerUrl = config.serverUrl();
 
 const Profesor = require('./profesor-model');
 
