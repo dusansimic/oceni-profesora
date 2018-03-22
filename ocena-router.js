@@ -1,14 +1,30 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 const config = require('./config');
-
-const ocenaRouter = express.Router(); // eslint-disable-line new-cap
-
-const ServerUrl = config.serverUrl();
-
 const Profesor = require('./profesor-model');
 
+const ocenaRouter = express.Router(); // eslint-disable-line new-cap
+const ServerUrl = config.serverUrl();
+const superSecret = config.superSecret;
+
 ocenaRouter.put('/:id', (req, res, next) => {
+	const token = req.body.token || req.query.token || req.headers['x-access-token'];
+	if (token) {
+		let _err;
+		jwt.verify(token, superSecret, (err, decoded) => {
+			if (err) {
+				_err = err;
+			} else {
+				req.decoded = decoded;
+			}
+		});
+		if (_err) {
+			return next(_err);
+		}
+	} else {
+		return next(new Error('No access token found (not logged in)!'));
+	}
 	const profData = {jmbg: req.params.id};
 	const ocenaData = req.body.ocena;
 	if (!ocenaData) {

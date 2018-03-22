@@ -9,7 +9,7 @@ const ServerUrl = config.serverUrl();
 
 const User = require('./user-model');
 
-const superSecret = config.superSecret();
+const superSecret = config.superSecret;
 
 userRouter.get('/:username', (req, res, next) => {
 	const userQuery = {username: req.params.username};
@@ -79,7 +79,7 @@ userRouter.post('/auth', (req, res, next) => {
 		};
 
 		const token = jwt.sign(payload, superSecret, {
-			expiresIn: '15m'
+			expiresIn: '1h'
 		});
 
 		res.json({

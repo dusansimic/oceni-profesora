@@ -40,12 +40,22 @@ profesorRouter.post('/', (req, res, next) => {
 		useMongoClient: true
 	});
 
-	Profesor.create(profData, (err, docs) => {
+	Profesor.findOne({jmbg: profData.jmbg}, (err, docs) => {
 		if (err) {
 			return next(err);
 		}
+		if (docs !== null) {
+			return next(new Error('Profesor already exists!'));
+		}
 
-		return res.send(docs);
+		Profesor.create(profData, (err, docs) => {
+			if (err) {
+				return next(err);
+			}
+
+			console.log(docs);
+			return res.send(docs);
+		});
 	});
 });
 

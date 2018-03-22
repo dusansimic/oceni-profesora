@@ -44,10 +44,16 @@ const Profesor = new Schema({
 			required: true,
 			min: 0
 		},
+		liked: {
+			type: [String]
+		},
 		dislikes: {
 			type: Number,
 			required: true,
 			min: 0
+		},
+		disliked: {
+			type: [String]
 		}
 	}],
 	skole: [{
