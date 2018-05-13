@@ -22,7 +22,8 @@
     "xo": "^0.18.2"
   },
   "scripts": {
-    "dev": "nodemon",
+    "dev": "DEV_MODE=true nodemon",
+    "start": "node .",
     "test": "xo"
   }
 }
